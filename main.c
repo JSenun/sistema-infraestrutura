@@ -43,19 +43,60 @@ int randomInRange(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
+// Função para criar uma rua
+void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numCasas) {
+    rua->ID = ID;
+    rua->comprimento = comprimento;
+    rua->anoObra = anoObra;
+    rua->numCasas = numCasas;
+}
+
 // Função para criar e inicializar um distrito
-void criarDistrito(Distrito *distrito, int ID, double area, int habitantes) {
+void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int numRuas) {
     distrito->ID = ID;
     distrito->area = area;
     distrito->habitantes = habitantes;
-
-    // Inicializa os outros campos do distrito como necessário
     distrito->desempregados = habitantes * (INDICE_DESEMPREGO / 100);
     distrito->aposentados = habitantes * (INDICE_APOSENTADORIA / 100);
     distrito->populacaoInfantil = habitantes * (POPULACAO_INFANTIL / 100);
     distrito->densidadeHabitacional = habitantes / area;
     distrito->carros = habitantes / 10;
     distrito->motos = habitantes / 20;
+
+    // Cria ruas para o distrito
+    for (int i = 0; i < numRuas; i++) {
+        int ruaID = i + 1;
+        double comprimento = (rand() % 10) + 1;  // Comprimento da rua entre 1 e 10 quilômetros
+        int anoObra = randomInRange(1950, 2020); // Ano de inauguração da obra
+        int numCasas = randomInRange(5, 20);    // Número de casas na rua
+
+        criarRua(&distrito->ruas[i], ruaID, comprimento, anoObra, numCasas);
+    }
+}
+
+// Função para listar as informações de um distrito
+void listarInformacoesDistrito(const Distrito *distrito) {
+    printf("\nInformações do Distrito %d:\n", distrito->ID);
+    printf("Área: %.2f km²\n", distrito->area);
+    printf("Habitantes: %d\n", distrito->habitantes);
+    printf("Densidade Habitacional: %.3f Hab/KM²\n", distrito->densidadeHabitacional);
+    printf("Carros estimados no distrito: %d\n", distrito->carros);
+    printf("Motos estimadas no distrito: %d\n", distrito->motos);
+    printf("Desempregados: %d\n", distrito->desempregados);
+    printf("Aposentados: %d\n", distrito->aposentados);
+    printf("Menores de 17 anos: %d\n", distrito->populacaoInfantil);
+}
+
+// Função para listar as ruas de um distrito
+void listarRuasDistrito(const Distrito *distrito) {
+    printf("\nRuas do Distrito %d:\n", distrito->ID);
+    for (int i = 0; i < 50; i++) {
+        if (distrito->ruas[i].ID == 0 || distrito->ruas[i].ID <= 0) {
+            break; // Sai do loop se não houver mais ruas
+        }
+        printf("Rua %d: Comprimento: %.2f km | Ano de Obra: %d | Número de Casas: %d\n",
+               distrito->ruas[i].ID, distrito->ruas[i].comprimento, distrito->ruas[i].anoObra, distrito->ruas[i].numCasas);
+    }
 }
 
 int main() {
@@ -104,12 +145,13 @@ int main() {
     for (int i = 0; i < numDistritos; i++) {
         int habitantesNesteDistrito = randomInRange(minHabitantesPorDistrito, maxHabitantesPorDistrito);
         double areaNesteDistrito = randomInRange(minAreaPorDistrito, maxAreaPorDistrito);
+        int numRuas = randomInRange(10,40);
 
-        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito);
+        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
 
-        printf("Distrito %d: %.2f área(KM²) | %d habitantes | Densidade Habitacional (Hab/KM²): %.3f  \n", distritos[i].ID, distritos[i].area, distritos[i].habitantes, distritos[i].densidadeHabitacional);
-        printf("Carros estimados no distrito: %d | Motos estimadas no distrito: %d\n", distritos[i].carros, distritos[i].motos);
-        printf("Desempregados: %d | Aposentados: %d | Menores de 17 anos: %d\n\n", distritos[i].desempregados, distritos[i].aposentados, distritos[i].populacaoInfantil);
+        listarInformacoesDistrito(&distritos[i]);
+        
+        listarRuasDistrito(&distritos[i]);
     }
 
     return 0;

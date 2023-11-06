@@ -11,11 +11,19 @@
 #define INDICE_APOSENTADORIA 15.0
 
 
-typedef struct Rua{
-    int ID; // Nome da rua
+typedef struct Casa {
+    int ID;             // Nome da casa
+    int numMoradores;   // Número de moradores na casa
+    double gastoEletrico; // Gasto elétrico da casa em kWh
+    double gastoAgua;    // Gasto de água da casa em litros
+};
+
+typedef struct Rua {
+    int ID;             // Nome da rua
     double comprimento; // Comprimento da rua em quilômetros
-    int anoObra; // Ano de inauguração da Obra
-    int numCasas; // Número de casas na rua
+    int anoObra;        // Ano de inauguração da Obra
+    int numCasas;       // Número de casas na rua
+    struct Casa casas[20]; // Vetor de casas na rua (até 20 casas)
 };
 
 // Definição da struct Avenida, que herda características da struct Rua
@@ -43,12 +51,29 @@ int randomInRange(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
+// Função para criar uma casa
+void criarCasa(struct Casa *casa, int ID, int numMoradores, double gastoEletrico, double gastoAgua) {
+    casa->ID = ID;
+    casa->numMoradores = numMoradores;
+    casa->gastoEletrico = gastoEletrico;
+    casa->gastoAgua = gastoAgua;
+}
+
 // Função para criar uma rua
 void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numCasas) {
     rua->ID = ID;
     rua->comprimento = comprimento;
     rua->anoObra = anoObra;
     rua->numCasas = numCasas;
+    
+    for (int i = 0; i < numCasas; i++) {
+        int casaID = i + 1;
+        int numMoradores = randomInRange(1, 5);  // Número de moradores (1 a 5)
+        double gastoEletrico = (rand() % 300) / 10.0;  // Gasto elétrico em kWh (0 a 30)
+        double gastoAgua = (rand() % 200) / 10.0;  // Gasto de água em litros (0 a 20)
+        
+        criarCasa(&rua->casas[i], casaID, numMoradores, gastoEletrico, gastoAgua);
+    }
 }
 
 // Função para criar e inicializar um distrito

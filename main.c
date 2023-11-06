@@ -43,6 +43,21 @@ int randomInRange(int min, int max) {
     return rand() % (max - min + 1) + min;
 }
 
+// Função para criar e inicializar um distrito
+void criarDistrito(Distrito *distrito, int ID, double area, int habitantes) {
+    distrito->ID = ID;
+    distrito->area = area;
+    distrito->habitantes = habitantes;
+
+    // Inicializa os outros campos do distrito como necessário
+    distrito->desempregados = habitantes * (INDICE_DESEMPREGO / 100);
+    distrito->aposentados = habitantes * (INDICE_APOSENTADORIA / 100);
+    distrito->populacaoInfantil = habitantes * (POPULACAO_INFANTIL / 100);
+    distrito->densidadeHabitacional = habitantes / area;
+    distrito->carros = habitantes / 10;
+    distrito->motos = habitantes / 20;
+}
+
 int main() {
     int areaCidade;
     int totalHabitantes;
@@ -86,21 +101,13 @@ int main() {
     // Cria um vetor de structs Distritos para a atribuição de dados;
     Distrito distritos[numDistritos];
 
-    //Gerando valores e atribuindo eles a cada Distrito
     for (int i = 0; i < numDistritos; i++) {
         int habitantesNesteDistrito = randomInRange(minHabitantesPorDistrito, maxHabitantesPorDistrito);
         double areaNesteDistrito = randomInRange(minAreaPorDistrito, maxAreaPorDistrito);
 
-        distritos[i].ID = i + 1;
-        distritos[i].habitantes = habitantesNesteDistrito; // Atribuindo o número de habitantes para cada distrito
-        distritos[i].desempregados = habitantesNesteDistrito * (INDICE_DESEMPREGO / 100);
-        distritos[i].aposentados = habitantesNesteDistrito * (INDICE_APOSENTADORIA / 100);
-        distritos[i].populacaoInfantil = habitantesNesteDistrito * (POPULACAO_INFANTIL / 100);
-        distritos[i].area = areaNesteDistrito; // Atribuindo o número da área para cada distrito
-        distritos[i].densidadeHabitacional = habitantesNesteDistrito / areaNesteDistrito;
-        distritos[i].carros = habitantesNesteDistrito / 10;
-        distritos[i].motos = habitantesNesteDistrito / 20;
-        printf("Distrito %d: %.2f área(KM²) | %d habitantes | Densidade Habitacional (Hab/KM²): %.3f  \n", distritos[i].ID,distritos[i].area, distritos[i].habitantes, distritos[i].densidadeHabitacional);
+        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito);
+
+        printf("Distrito %d: %.2f área(KM²) | %d habitantes | Densidade Habitacional (Hab/KM²): %.3f  \n", distritos[i].ID, distritos[i].area, distritos[i].habitantes, distritos[i].densidadeHabitacional);
         printf("Carros estimados no distrito: %d | Motos estimadas no distrito: %d\n", distritos[i].carros, distritos[i].motos);
         printf("Desempregados: %d | Aposentados: %d | Menores de 17 anos: %d\n\n", distritos[i].desempregados, distritos[i].aposentados, distritos[i].populacaoInfantil);
     }

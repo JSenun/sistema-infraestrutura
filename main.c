@@ -124,6 +124,22 @@ void listarRuasDistrito(const Distrito *distrito) {
     }
 }
 
+// Função para listar as informações das casas em um distrito
+void listarCasasNoDistrito(const Distrito *distrito) {
+    printf("\nInformações das Casas no Distrito %d:\n", distrito->ID);
+    for (int i = 0; i < 50; i++) {
+        if (distrito->ruas[i].ID == 0 || distrito->ruas[i].ID <= 0) {
+            break; // Sai do loop se não houver mais ruas
+        }
+        printf("Rua %d:\n", distrito->ruas[i].ID);
+        for (int j = 0; j < distrito->ruas[i].numCasas; j++) {
+            printf("Casa %d: Número de Moradores: %d | Gasto Elétrico: %.2f kWh | Gasto de Água: %.2f litros\n",
+                   distrito->ruas[i].casas[j].ID, distrito->ruas[i].casas[j].numMoradores,
+                   distrito->ruas[i].casas[j].gastoEletrico, distrito->ruas[i].casas[j].gastoAgua);
+        }
+    }
+}
+
 int main() {
     int areaCidade;
     int totalHabitantes;
@@ -177,6 +193,8 @@ int main() {
         listarInformacoesDistrito(&distritos[i]);
         
         listarRuasDistrito(&distritos[i]);
+        
+        listarCasasNoDistrito(&distritos[i]);
     }
 
     return 0;

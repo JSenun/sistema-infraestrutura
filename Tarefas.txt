@@ -1,6 +1,8 @@
 A fazer
 
-* Criar as structs para Ruas e Avenidas. (Talvez Estradas)
+* Atualizar as formas de calculo de Ruas por distrito e Núm Casas por rua
+* Ajustar os valores aleatórios de habitantes por casa e gastos
+* Criar funções e structs relacionadas as avenidas
 * Criar struct para Distrito comercial e Distrito Industrial
 * Pesquisar sobre distribuição de transporte público e criar devidas structs
 * 

@@ -1,0 +1,7 @@
+A fazer
+
+* Criar as structs para Ruas e Avenidas. (Talvez Estradas)
+* Criar struct para Distrito comercial e Distrito Industrial
+* Pesquisar sobre distribuição de transporte público e criar devidas structs
+* 
+* 

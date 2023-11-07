@@ -66,13 +66,13 @@ void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numC
     rua->comprimento = comprimento;
     rua->anoObra = anoObra;
     rua->numCasas = numCasas;
-    
+
     for (int i = 0; i < numCasas; i++) {
         int casaID = i + 1;
         int numMoradores = randomInRange(1, 5);  // Número de moradores (1 a 5)
         double gastoEletrico = (rand() % 300) / 10.0;  // Gasto elétrico em kWh (0 a 30)
         double gastoAgua = (rand() % 200) / 10.0;  // Gasto de água em litros (0 a 20)
-        
+
         criarCasa(&rua->casas[i], casaID, numMoradores, gastoEletrico, gastoAgua);
     }
 }
@@ -92,10 +92,22 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
     // Calcula o número total de casas com base no número de habitantes
     int numCasas = habitantes / MEDIA_MORADORES_RESIDENCIA;
 
+    // Inicializa o comprimento total das ruas
+    double comprimentoTotalRuas = 0.0;
+
     // Cria ruas para o distrito e distribui casas entre elas
     for (int i = 0; i < numRuas; i++) {
         int ruaID = i + 1;
-        double comprimento = randomInRange(1,10);  // Comprimento da rua entre 1 e 10 quilômetros
+
+        // Calcula o máximo comprimento permitido para esta rua
+        double comprimentoMaximo = (area / numRuas) * 2; // Exemplo: divide a área igualmente entre as ruas e multiplica por 2
+
+        // Calcula o comprimento da rua, garantindo que não exceda o máximo
+        double comprimento = randomInRange(1, comprimentoMaximo);
+
+        // Atualiza o comprimento total das ruas
+        comprimentoTotalRuas += comprimento;
+
         int anoObra = randomInRange(1950, 2020); // Ano de inauguração da obra
         
         // Calcula o número de casas para esta rua
@@ -106,6 +118,12 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
 
         // Reduz o número de casas restantes
         numCasas -= numCasasNaRua;
+
+        // Verifica se o comprimento total das ruas ultrapassou a área máxima
+        if (comprimentoTotalRuas > area) {
+            printf("A área máxima do distrito foi atingida. O número de ruas foi ajustado.\n");
+            break;
+        }
     }
 }
 
@@ -161,11 +179,11 @@ int main() {
     scanf("%d", &totalHabitantes);
 
     // Calcula o mínimo e o máximo de habitantes por distrito
-    int minHabitantesPorDistrito = 0.002 * totalHabitantes;  // 0.20%
+    int minHabitantesPorDistrito = 0.0075 * totalHabitantes;  // 0.75%
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
     
     // Calcula o mínimo e o máximo de área por distrito
-    double minAreaPorDistrito = 0.0075 * areaCidade;  // 0.75%
+    double minAreaPorDistrito = 0.0055 * areaCidade;  // 0.55%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     // Calcula o mínimo e o máximo de distritos possíveis baseados nas estimativas dos habitantes
@@ -201,10 +219,8 @@ int main() {
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
 
         listarInformacoesDistrito(&distritos[i]);
-        
-        listarRuasDistrito(&distritos[i]);
-        
         listarCasasNoDistrito(&distritos[i]);
+        
     }
 
     return 0;

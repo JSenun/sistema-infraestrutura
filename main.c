@@ -121,7 +121,6 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
 
         // Verifica se o comprimento total das ruas ultrapassou a área máxima
         if (comprimentoTotalRuas > area) {
-            printf("A área máxima do distrito foi atingida. O número de ruas foi ajustado.\n");
             break;
         }
     }
@@ -168,8 +167,8 @@ void listarCasasNoDistrito(const Distrito *distrito) {
     }
 }
 
-void iniciaSimulacao(){
-        int areaCidade;
+Distrito* iniciaSimulacao(){
+    int areaCidade;
     int totalHabitantes;
 
     printf("Digite a área estimada da cidade em KM²: ");
@@ -208,23 +207,29 @@ void iniciaSimulacao(){
     // Distribui aleatoriamente os habitantes entre os distritos
     srand(time(NULL));  // Inicializa a semente para números aleatórios
 
+
+
     // Cria um vetor de structs Distritos para a atribuição de dados;
-    Distrito distritos[numDistritos];
+    Distrito* distritos = malloc(sizeof(Distrito) * numDistritos);
 
     for (int i = 0; i < numDistritos; i++) {
         int habitantesNesteDistrito = randomInRange(minHabitantesPorDistrito, maxHabitantesPorDistrito);
         double areaNesteDistrito = randomInRange(minAreaPorDistrito, maxAreaPorDistrito);
         int numRuas = randomInRange(10,40);
 
-        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
-
-        listarInformacoesDistrito(&distritos[i]);  
+        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas); 
     }
+
+    return distritos;
 }
 
 int main() {
 
-    iniciaSimulacao();
+    Distrito* distritos = iniciaSimulacao();
+
+    listarCasasNoDistrito(&distritos[3]);
+    listarCasasNoDistrito(&distritos[25]);
+    listarCasasNoDistrito(&distritos[32]);
 
     return 0;
 }

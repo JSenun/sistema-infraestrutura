@@ -165,7 +165,7 @@ int main() {
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
     
     // Calcula o mínimo e o máximo de área por distrito
-    double minAreaPorDistrito = 0.0015 * areaCidade;  // 0.15%
+    double minAreaPorDistrito = 0.0075 * areaCidade;  // 0.75%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     // Calcula o mínimo e o máximo de distritos possíveis baseados nas estimativas dos habitantes

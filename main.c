@@ -9,6 +9,7 @@
 #define INDICE_DESEMPREGO 8.0
 #define POPULACAO_INFANTIL 17.0 
 #define INDICE_APOSENTADORIA 15.0
+#define MEDIA_MORADORES_RESIDENCIA 3.5
 
 
 typedef struct Casa {
@@ -88,14 +89,23 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
     distrito->carros = habitantes / 10;
     distrito->motos = habitantes / 20;
 
-    // Cria ruas para o distrito
+    // Calcula o número total de casas com base no número de habitantes
+    int numCasas = habitantes / MEDIA_MORADORES_RESIDENCIA;
+
+    // Cria ruas para o distrito e distribui casas entre elas
     for (int i = 0; i < numRuas; i++) {
         int ruaID = i + 1;
-        double comprimento = (rand() % 10) + 1;  // Comprimento da rua entre 1 e 10 quilômetros
+        double comprimento = randomInRange(1,10);  // Comprimento da rua entre 1 e 10 quilômetros
         int anoObra = randomInRange(1950, 2020); // Ano de inauguração da obra
-        int numCasas = randomInRange(5, 20);    // Número de casas na rua
+        
+        // Calcula o número de casas para esta rua
+        int numCasasNaRua = numCasas / numRuas;
 
-        criarRua(&distrito->ruas[i], ruaID, comprimento, anoObra, numCasas);
+        // Atribui as casas a esta rua
+        criarRua(&distrito->ruas[i], ruaID, comprimento, anoObra, numCasasNaRua);
+
+        // Reduz o número de casas restantes
+        numCasas -= numCasasNaRua;
     }
 }
 

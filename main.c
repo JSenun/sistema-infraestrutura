@@ -19,7 +19,7 @@ typedef struct Casa {
     int numMoradores;   // Número de moradores na casa
     double gastoEletrico; // Gasto elétrico da casa em kWh
     double gastoAgua;    // Gasto de água da casa em litros
-};
+}Casa;
 
 typedef struct Rua {
     int ID;             // Nome da rua
@@ -27,26 +27,32 @@ typedef struct Rua {
     int anoObra;        // Ano de inauguração da Obra
     int numCasas;       // Número de casas na rua
     struct Casa casas[20]; // Vetor de casas na rua (até 20 casas)
-};
+}Rua;
 
-// Definição da struct Avenida, que herda características da struct Rua
-typedef struct Avenida{
-    struct Rua rua; // Uma avenida é uma rua com características adicionais
-    int numero_de_lojas; // Número de lojas na avenida
-};
+typedef struct Onibus {
+    int ID;           // Identificação do ônibus
+    int capacidade;   // Capacidade de passageiros do ônibus
+} Onibus;
+
+typedef struct LinhaOnibus {
+    int ID;             // Identificação da linha de ônibus
+    struct Rua *inicio; // Rua de início da linha
+    struct Rua *fim;    // Rua de término da linha
+    struct Onibus onibus; // Ônibus que opera na linha
+} LinhaOnibus;
 
 typedef struct {
     int ID; 
     double area; // Área em KM quadrados do distrito
     int habitantes; // Núm. de habitantes
     struct Rua ruas[50]; // Vetor de ruas de cada distrito
-    struct Avenida avenidas[5]; // Vetor de Avenidas de cada distrito
     int desempregados; 
     int populacaoInfantil;// Núm. de habitantes menores de 17 anos
     int aposentados; 
     double densidadeHabitacional; // Núm. Habitantes / Área
     int carros; // Estimativa de quantos carros podem existir no distrito simulado - 1 a cada 10 pessoas
     int motos; // Estimativa de quantas motos podem existir no distrito simulado - 1 a cada 20 pessoas
+    struct LinhaOnibus linhasOnibus[10]; // Vetor de linhas de ônibus
 } Distrito;
 
 // Função para gerar um número aleatório entre min e max
@@ -228,10 +234,6 @@ Distrito* iniciaSimulacao(){
 int main() {
 
     Distrito* distritos = iniciaSimulacao();
-
-    listarCasasNoDistrito(&distritos[3]);
-    listarCasasNoDistrito(&distritos[25]);
-    listarCasasNoDistrito(&distritos[32]);
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.
     free(distritos);

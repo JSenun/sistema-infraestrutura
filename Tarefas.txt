@@ -1,9 +1,5 @@
 A fazer
 
-* Atualizar as formas de calculo de Ruas por distrito e Núm Casas por rua
-* Ajustar os valores aleatórios de habitantes por casa e gastos
-* Criar funções e structs relacionadas as avenidas
-* Criar struct para Distrito comercial e Distrito Industrial
-* Pesquisar sobre distribuição de transporte público e criar devidas structs
-* 
-* 
+* Criar funções de criação de ônibus e linhas
+* Criar funções para listar linhas de onibus por rua e distrito
+* Pesquisar sobre distribuição de energia e água e criar devidos structs

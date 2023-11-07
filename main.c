@@ -168,8 +168,8 @@ void listarCasasNoDistrito(const Distrito *distrito) {
     }
 }
 
-int main() {
-    int areaCidade;
+void iniciaSimulacao(){
+        int areaCidade;
     int totalHabitantes;
 
     printf("Digite a área estimada da cidade em KM²: ");
@@ -218,10 +218,13 @@ int main() {
 
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
 
-        listarInformacoesDistrito(&distritos[i]);
-        listarCasasNoDistrito(&distritos[i]);
-        
+        listarInformacoesDistrito(&distritos[i]);  
     }
+}
+
+int main() {
+
+    iniciaSimulacao();
 
     return 0;
 }

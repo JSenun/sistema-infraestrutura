@@ -10,6 +10,8 @@
 #define POPULACAO_INFANTIL 17.0 
 #define INDICE_APOSENTADORIA 15.0
 #define MEDIA_MORADORES_RESIDENCIA 3.5
+#define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia
+#define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia
 
 
 typedef struct Casa {
@@ -70,8 +72,8 @@ void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numC
     for (int i = 0; i < numCasas; i++) {
         int casaID = i + 1;
         int numMoradores = randomInRange(1, 5);  // Número de moradores (1 a 5)
-        double gastoEletrico = (rand() % 300) / 10.0;  // Gasto elétrico em kWh (0 a 30)
-        double gastoAgua = (rand() % 200) / 10.0;  // Gasto de água em litros (0 a 20)
+        double gastoEletrico = numMoradores * MEDIA_GASTO_ENERGIA; 
+        double gastoAgua = numMoradores * MEDIA_GASTO_AGUA;
 
         criarCasa(&rua->casas[i], casaID, numMoradores, gastoEletrico, gastoAgua);
     }
@@ -230,6 +232,9 @@ int main() {
     listarCasasNoDistrito(&distritos[3]);
     listarCasasNoDistrito(&distritos[25]);
     listarCasasNoDistrito(&distritos[32]);
+
+    // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.
+    free(distritos);
 
     return 0;
 }

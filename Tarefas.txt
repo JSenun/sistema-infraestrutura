@@ -1,5 +1,4 @@
 A fazer
 
-* Criar funções de criação de ônibus e linhas
-* Criar funções para listar linhas de onibus por rua e distrito
+* Arrumar bugs das ruas número 0 na geração de linhas de ônibus
 * Pesquisar sobre distribuição de energia e água e criar devidos structs

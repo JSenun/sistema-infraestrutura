@@ -304,7 +304,7 @@ Distrito* iniciaSimulacao() {
         int numRuas = randomInRange(10, 40);
 
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
-        listarRuasDistrito(&distritos[i]);
+        listarLinhasOnibusDistrito(&distritos[i]);
         //printf("Distrito %d - Criado com sucesso.\n", i);
 
     }

@@ -39,7 +39,8 @@ typedef struct LinhaOnibus {
     int ID;             // Identificação da linha de ônibus
     struct Rua *inicio; // Rua de início da linha
     struct Rua *fim;    // Rua de término da linha
-    struct Onibus onibus; // Ônibus que opera na linha
+    struct Onibus onibus; // Cria o "modelo" de ônibus que opera na linha
+    int quantOnibus; // Quantos ônibus operam na linha
 } LinhaOnibus;
 
 typedef struct {
@@ -96,6 +97,7 @@ void criarLinhaOnibus(LinhaOnibus *linha, int ID, Rua *ruas, int numRuas) {
     linha->ID = ID;
     linha->inicio = &ruas[randomInRange(0, numRuas - 1)];  // Atribui uma rua aleatória como início
     linha->fim = &ruas[randomInRange(0, numRuas - 1)];     // Atribui outra rua aleatória como fim
+    linha->quantOnibus = randomInRange(3, 15);
 
     // Verifica se a rua de início e a rua de término não são as mesmas
     while (linha->inicio == linha->fim) {
@@ -218,11 +220,12 @@ void listarLinhasOnibusDistrito(const Distrito *distrito) {
         if (distrito->linhasOnibus[i].ID == 0 || distrito->linhasOnibus[i].ID <= 0) {
             break;  // Sai do loop se não houver mais linhas de ônibus
         }
-        printf("Linha %d: Início: Rua %d, Fim: Rua %d, Capacidade do Ônibus: %d\n",
+        printf("Linha %d: Início: Rua %d, Fim: Rua %d, Capacidade dos Ônibus: %d, Ônibus operando na Linha: %d\n",
                distrito->linhasOnibus[i].ID,
                distrito->linhasOnibus[i].inicio->ID,
                distrito->linhasOnibus[i].fim->ID,
-               distrito->linhasOnibus[i].onibus.capacidade);
+               distrito->linhasOnibus[i].onibus.capacidade,
+               distrito->linhasOnibus[i].quantOnibus);
     }
 }
 

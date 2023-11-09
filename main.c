@@ -53,7 +53,7 @@ typedef struct {
     double densidadeHabitacional; // Núm. Habitantes / Área
     int carros; // Estimativa de quantos carros podem existir no distrito simulado - 1 a cada 10 pessoas
     int motos; // Estimativa de quantas motos podem existir no distrito simulado - 1 a cada 20 pessoas
-    struct LinhaOnibus linhasOnibus[10]; // Vetor de linhas de ônibus
+    struct LinhaOnibus linhasOnibus[15]; // Vetor de linhas de ônibus
 } Distrito;
 
 // Função para gerar um número aleatório entre min e max
@@ -83,6 +83,34 @@ void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numC
         double gastoAgua = numMoradores * MEDIA_GASTO_AGUA;
 
         criarCasa(&rua->casas[i], casaID, numMoradores, gastoEletrico, gastoAgua);
+    }
+}
+
+// Função para criar um ônibus
+void criarOnibus(Onibus *onibus, int ID, int capacidade) {
+    onibus->ID = ID;
+    onibus->capacidade = capacidade;
+}
+
+void criarLinhaOnibus(LinhaOnibus *linha, int ID, Rua *ruas, int numRuas) {
+    linha->ID = ID;
+    linha->inicio = &ruas[randomInRange(0, numRuas - 1)];  // Atribui uma rua aleatória como início
+    linha->fim = &ruas[randomInRange(0, numRuas - 1)];     // Atribui outra rua aleatória como fim
+
+    // Verifica se a rua de início e a rua de término não são as mesmas
+    while (linha->inicio == linha->fim) {
+        linha->fim = &ruas[randomInRange(0, numRuas - 1)];
+    }
+
+    // Chama a função criarOnibus para inicializar o ônibus na linha
+    criarOnibus(&linha->onibus, ID, randomInRange(20, 50));  // Capacidade do ônibus entre 20 e 50 passageiros
+}
+
+// Função para criar e atribuir linhas de ônibus a ruas em um distrito
+void criarLinhasDeOnibus(Distrito *distrito) {
+    for (int i = 0; i < 15; i++) {  // Criar até 15 linhas de ônibus
+        int linhaID = i + 1;
+        criarLinhaOnibus(&distrito->linhasOnibus[i], linhaID, distrito->ruas, 50);  // Assumindo que há no máximo 50 ruas no distrito
     }
 }
 
@@ -132,6 +160,13 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
         if (comprimentoTotalRuas > area) {
             break;
         }
+        
+    }
+    
+    // Cria e atribui linhas de ônibus ao distrito
+    for (int i = 0; i < 15; i++) {  // Criar até 15 linhas de ônibus
+        int linhaID = i + 1;
+        criarLinhaOnibus(&distrito->linhasOnibus[i], linhaID, distrito->ruas, numRuas);
     }
 }
 
@@ -173,6 +208,21 @@ void listarCasasNoDistrito(const Distrito *distrito) {
                    distrito->ruas[i].casas[j].ID, distrito->ruas[i].casas[j].numMoradores,
                    distrito->ruas[i].casas[j].gastoEletrico, distrito->ruas[i].casas[j].gastoAgua);
         }
+    }
+}
+
+// Função para listar as informações das linhas de ônibus em um distrito
+void listarLinhasOnibusDistrito(const Distrito *distrito) {
+    printf("\nLinhas de Ônibus no Distrito %d:\n", distrito->ID);
+    for (int i = 0; i < 15; i++) {  // Supondo que há no máximo 15 linhas de ônibus
+        if (distrito->linhasOnibus[i].ID == 0 || distrito->linhasOnibus[i].ID <= 0) {
+            break;  // Sai do loop se não houver mais linhas de ônibus
+        }
+        printf("Linha %d: Início: Rua %d, Fim: Rua %d, Capacidade do Ônibus: %d\n",
+               distrito->linhasOnibus[i].ID,
+               distrito->linhasOnibus[i].inicio->ID,
+               distrito->linhasOnibus[i].fim->ID,
+               distrito->linhasOnibus[i].onibus.capacidade);
     }
 }
 
@@ -227,6 +277,8 @@ Distrito* iniciaSimulacao(){
         int numRuas = randomInRange(10,40);
 
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas); 
+        listarLinhasOnibusDistrito(&distritos[i]);
+        
     }
 
     return distritos;

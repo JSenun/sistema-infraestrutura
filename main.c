@@ -183,6 +183,33 @@ void listarInformacoesDistrito(const Distrito *distrito) {
     printf("Desempregados: %d\n", distrito->desempregados);
     printf("Aposentados: %d\n", distrito->aposentados);
     printf("Menores de 17 anos: %d\n", distrito->populacaoInfantil);
+
+    int totalRuas = 0;
+    int totalCasas = 0;
+    int totalLinhasOnibus = 0;
+    int totalOnibus = 0;
+
+    // Calcular totais
+    for (int i = 0; i < 50; i++) {
+        if (distrito->ruas[i].ID == 0 || distrito->ruas[i].ID <= 0) {
+            break; // Sai do loop se não houver mais ruas
+        }
+        totalRuas++;
+        totalCasas += distrito->ruas[i].numCasas;
+    }
+
+    for (int i = 0; i < 15; i++) {
+        if (distrito->linhasOnibus[i].ID == 0 || distrito->linhasOnibus[i].ID <= 0) {
+            break;  // Sai do loop se não houver mais linhas de ônibus
+        }
+        totalLinhasOnibus++;
+        totalOnibus += distrito->linhasOnibus[i].quantOnibus;
+    }
+
+    printf("Total de Ruas: %d\n", totalRuas);
+    printf("Total de Casas: %d\n", totalCasas);
+    printf("Total de Linhas de Ônibus: %d\n", totalLinhasOnibus);
+    printf("Total de Ônibus: %d\n", totalOnibus);
 }
 
 // Função para listar as ruas de um distrito
@@ -280,7 +307,7 @@ Distrito* iniciaSimulacao(){
         int numRuas = randomInRange(10,40);
 
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas); 
-        listarLinhasOnibusDistrito(&distritos[i]);
+        listarInformacoesDistrito(&distritos[i]);
         
     }
 

@@ -27,7 +27,7 @@ typedef struct Rua {
     double comprimento; // Comprimento da rua em quilômetros
     int anoObra;        // Ano de inauguração da Obra
     int numCasas;       // Número de casas na rua
-    struct Casa casas[20]; // Vetor de casas na rua (até 20 casas)
+    struct Casa casas[200]; // Vetor de casas na rua (até 200 casas)
 }Rua;
 
 typedef struct Onibus {
@@ -57,11 +57,18 @@ typedef struct {
     struct LinhaOnibus linhasOnibus[15]; // Vetor de linhas de ônibus
 } Distrito;
 
-// Função para gerar um número aleatório entre min e max
+// Função para gerar um número aleatório entre min e max (inclusive)
 int randomInRange(int min, int max) {
-    return rand() % (max - min + 1) + min;
-}
+    // Certifique-se de que max é pelo menos min + 1 para evitar problemas com % 0
+    if (max < min) {
+        int temp = max;
+        max = min;
+        min = temp;
+    }
 
+    // Gera um número aleatório no intervalo [min, max]
+    return min + rand() % (max - min + 1);
+}
 // Função para criar uma casa
 void criarCasa(struct Casa *casa, int ID, int numMoradores, double gastoEletrico, double gastoAgua) {
     casa->ID = ID;
@@ -76,6 +83,12 @@ void criarRua(struct Rua *rua, int ID, double comprimento, int anoObra, int numC
     rua->comprimento = comprimento;
     rua->anoObra = anoObra;
     rua->numCasas = numCasas;
+
+    // Limita o número de casas ao tamanho do vetor
+    if (numCasas > 200) {
+        printf("Aviso: O número de casas na rua %d foi limitado a 200.\n", ID);
+        numCasas = 200;
+    }
 
     for (int i = 0; i < numCasas; i++) {
         int casaID = i + 1;
@@ -134,7 +147,7 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
     // Inicializa o comprimento total das ruas
     double comprimentoTotalRuas = 0.0;
 
-    // Cria ruas para o distrito e distribui casas entre elas
+// Cria ruas para o distrito e distribui casas entre elas
     for (int i = 0; i < numRuas; i++) {
         int ruaID = i + 1;
 
@@ -142,15 +155,20 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
         double comprimentoMaximo = (area / numRuas) * 2; // Exemplo: divide a área igualmente entre as ruas e multiplica por 2
 
         // Calcula o comprimento da rua, garantindo que não exceda o máximo
-        double comprimento = randomInRange(1, comprimentoMaximo);
+        double comprimento = randomInRange(2, comprimentoMaximo);
 
         // Atualiza o comprimento total das ruas
         comprimentoTotalRuas += comprimento;
 
         int anoObra = randomInRange(1950, 2020); // Ano de inauguração da obra
-        
+
         // Calcula o número de casas para esta rua
         int numCasasNaRua = numCasas / numRuas;
+
+        // Limita o número de casas ao tamanho do vetor para evitar bugs
+        if (numCasasNaRua > 200) {
+            numCasasNaRua = 200;
+        }
 
         // Atribui as casas a esta rua
         criarRua(&distrito->ruas[i], ruaID, comprimento, anoObra, numCasasNaRua);
@@ -162,7 +180,6 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
         if (comprimentoTotalRuas > area) {
             break;
         }
-        
     }
     
     // Cria e atribui linhas de ônibus ao distrito
@@ -256,47 +273,27 @@ void listarLinhasOnibusDistrito(const Distrito *distrito) {
     }
 }
 
-Distrito* iniciaSimulacao(){
-    int areaCidade;
-    int totalHabitantes;
-
-    printf("Digite a área estimada da cidade em KM²: ");
-    scanf("%d", &areaCidade);
-
-    printf("Digite o total estimado de habitantes da cidade: ");
-    scanf("%d", &totalHabitantes);
+Distrito* iniciaSimulacao() {
+    int areaCidade = randomInRange(600, 2000); // Área da cidade entre 500 e 2000 KM²
+    int totalHabitantes = randomInRange(75000, 500000); // Número total de habitantes entre 50.000 e 500.000
 
     // Calcula o mínimo e o máximo de habitantes por distrito
     int minHabitantesPorDistrito = 0.0075 * totalHabitantes;  // 0.75%
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
-    
+
     // Calcula o mínimo e o máximo de área por distrito
     double minAreaPorDistrito = 0.0055 * areaCidade;  // 0.55%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
-    // Calcula o mínimo e o máximo de distritos possíveis baseados nas estimativas dos habitantes
-    int minDistritos = totalHabitantes / maxHabitantesPorDistrito;
-    int maxDistritos = totalHabitantes / minHabitantesPorDistrito;
+    int numDistritos = 96; // Número de distritos a serem criados na simulação
 
+    printf("Área estimada da cidade: %d KM²\n", areaCidade);
+    printf("Número total estimado de habitantes na cidade: %d\n", totalHabitantes);
     printf("Mínimo de habitantes por distrito: %d\n", minHabitantesPorDistrito);
     printf("Máximo de habitantes por distrito: %d\n", maxHabitantesPorDistrito);
-    printf("Mínimo de distritos possíveis: %d\n", minDistritos);
-    printf("Máximo de distritos possíveis: %d\n", maxDistritos);
-
-    // Recebe o número de distritos do usuário e verifica se está dentro do limite
-    int numDistritos;
-    printf("Digite o número de distritos que deseja criar: ");
-    scanf("%d", &numDistritos);
-
-    if (numDistritos < minDistritos || numDistritos > maxDistritos) {
-        printf("O número de distritos deve estar entre %d e %d\n", minDistritos, maxDistritos);
-        return 1;
-    }
 
     // Distribui aleatoriamente os habitantes entre os distritos
     srand(time(NULL));  // Inicializa a semente para números aleatórios
-
-
 
     // Cria um vetor de structs Distritos para a atribuição de dados;
     Distrito* distritos = malloc(sizeof(Distrito) * numDistritos);
@@ -304,15 +301,20 @@ Distrito* iniciaSimulacao(){
     for (int i = 0; i < numDistritos; i++) {
         int habitantesNesteDistrito = randomInRange(minHabitantesPorDistrito, maxHabitantesPorDistrito);
         double areaNesteDistrito = randomInRange(minAreaPorDistrito, maxAreaPorDistrito);
-        int numRuas = randomInRange(10,40);
+        int numRuas = randomInRange(10, 40);
 
-        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas); 
-        listarInformacoesDistrito(&distritos[i]);
-        
+        criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
+        listarRuasDistrito(&distritos[i]);
+        //printf("Distrito %d - Criado com sucesso.\n", i);
+
     }
+    
+    printf("Número de distritos gerados automaticamente: %d\n", numDistritos);
+    
 
     return distritos;
 }
+
 
 int main() {
 

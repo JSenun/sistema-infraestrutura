@@ -11,8 +11,8 @@
 #define POPULACAO_INFANTIL 17.0 
 #define INDICE_APOSENTADORIA 15.0
 #define MEDIA_MORADORES_RESIDENCIA 3.5
-#define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia
-#define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia
+#define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia para referência
+#define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia para referência
 
 
 typedef struct Casa {
@@ -43,6 +43,16 @@ typedef struct LinhaOnibus {
     int quantOnibus; // Quantos ônibus operam na linha
 } LinhaOnibus;
 
+typedef struct EstacaoTratamentoAgua {
+    int ID;             // Identificação da estação de tratamento de água
+    double capacidade;  // Capacidade de tratamento de água em litros por segundo
+} EstacaoTratamentoAgua;
+
+typedef struct UsinaEnergia {
+    int ID;             // Identificação da usina de energia
+    double capacidade;  // Capacidade de geração de energia em kilowatts
+} UsinaEnergia;
+
 typedef struct {
     int ID; 
     double area; // Área em KM quadrados do distrito
@@ -51,6 +61,10 @@ typedef struct {
     int desempregados; 
     int populacaoInfantil;// Núm. de habitantes menores de 17 anos
     int aposentados; 
+    double gastoTotalAgua;   // Gasto total de água em litros no distrito
+    double gastoTotalEnergia;// Gasto total de energia em kWh no distrito
+    struct EstacaoTratamentoAgua estacaoAgua;
+    struct UsinaEnergia usinaEnergia;
     double densidadeHabitacional; // Núm. Habitantes / Área
     int carros; // Estimativa de quantos carros podem existir no distrito simulado - 1 a cada 10 pessoas
     int motos; // Estimativa de quantas motos podem existir no distrito simulado - 1 a cada 20 pessoas
@@ -128,6 +142,17 @@ void criarLinhasDeOnibus(Distrito *distrito) {
         criarLinhaOnibus(&distrito->linhasOnibus[i], linhaID, distrito->ruas, 50);  // Assumindo que há no máximo 50 ruas no distrito
     }
 }
+// Função para criar Estação de água para cada distrito
+void criarEstacaoTratamentoAgua(EstacaoTratamentoAgua *estacao, int ID, double capacidade) {
+    estacao->ID = ID;
+    estacao->capacidade = capacidade;
+}
+
+// FUnção para criar Usina de água para cada distrito
+void criarUsinaEnergia(UsinaEnergia *usina, int ID, double capacidade) {
+    usina->ID = ID;
+    usina->capacidade = capacidade;
+}
 
 // Função para criar e inicializar um distrito
 void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int numRuas) {
@@ -187,6 +212,21 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
         int linhaID = i + 1;
         criarLinhaOnibus(&distrito->linhasOnibus[i], linhaID, distrito->ruas, numRuas);
     }
+    
+    for (int i = 0; i < numRuas; i++) {
+        for (int j = 0; j < distrito->ruas[i].numCasas; j++) {
+            distrito->gastoTotalAgua += distrito->ruas[i].casas[j].gastoAgua;
+            distrito->gastoTotalEnergia += distrito->ruas[i].casas[j].gastoEletrico;
+            }
+    }
+
+    // Inicialização da estação de tratamento de água e da usina de energia
+    double capacidadeEstacaoAgua = distrito->gastoTotalAgua * 1.1; // Exemplo: 10% a mais que o gasto total
+    double capacidadeUsinaEnergia = distrito->gastoTotalEnergia * 1.2; // Exemplo: 20% a mais que o gasto total
+
+    criarEstacaoTratamentoAgua(&distrito->estacaoAgua, 1,capacidadeEstacaoAgua);
+    criarUsinaEnergia(&distrito->usinaEnergia, 1, capacidadeUsinaEnergia);
+
 }
 
 // Função para listar as informações de um distrito
@@ -225,8 +265,12 @@ void listarInformacoesDistrito(const Distrito *distrito) {
 
     printf("Total de Ruas: %d\n", totalRuas);
     printf("Total de Casas: %d\n", totalCasas);
+
+    printf("Gasto Total de Água no Distrito: %.2f litros\n", distrito->gastoTotalAgua);
+    printf("Gasto Total de Energia no Distrito: %.2f kWh\n", distrito->gastoTotalEnergia);
+    
     printf("Total de Linhas de Ônibus: %d\n", totalLinhasOnibus);
-    printf("Total de Ônibus: %d\n", totalOnibus);
+    printf("Total de Ônibus: %d\n\n", totalOnibus);
 }
 
 // Função para listar as ruas de um distrito
@@ -274,15 +318,15 @@ void listarLinhasOnibusDistrito(const Distrito *distrito) {
 }
 
 Distrito* iniciaSimulacao() {
-    int areaCidade = randomInRange(600, 2000); // Área da cidade entre 500 e 2000 KM²
-    int totalHabitantes = randomInRange(75000, 500000); // Número total de habitantes entre 50.000 e 500.000
+    int areaCidade = randomInRange(900, 2000); // Área da cidade entre 500 e 2000 KM²
+    int totalHabitantes = randomInRange(75000, 750000); // Número total de habitantes entre 50.000 e 500.000
 
     // Calcula o mínimo e o máximo de habitantes por distrito
     int minHabitantesPorDistrito = 0.0075 * totalHabitantes;  // 0.75%
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
 
     // Calcula o mínimo e o máximo de área por distrito
-    double minAreaPorDistrito = 0.0055 * areaCidade;  // 0.55%
+    double minAreaPorDistrito = 0.01 * areaCidade;  // 1%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     int numDistritos = 96; // Número de distritos a serem criados na simulação
@@ -304,7 +348,6 @@ Distrito* iniciaSimulacao() {
         int numRuas = randomInRange(10, 40);
 
         criarDistrito(&distritos[i], i + 1, areaNesteDistrito, habitantesNesteDistrito, numRuas);
-        listarLinhasOnibusDistrito(&distritos[i]);
         //printf("Distrito %d - Criado com sucesso.\n", i);
 
     }
@@ -322,6 +365,9 @@ int main() {
     setlocale(LC_ALL, "portuguese");
 
     Distrito* distritos = iniciaSimulacao();
+    
+    listarInformacoesDistrito(&distritos[4]);
+    listarCasasNoDistrito(&distritos[4]);
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.
     free(distritos);

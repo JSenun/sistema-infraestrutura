@@ -363,12 +363,54 @@ void analiseDemografica(const Distrito *distrito) {
     printf("Percentual com 65 anos ou mais: %.2f%%\n", percentualCom65ouMais);
 }
 
+void analiseMobilidadeUrbana(const Distrito *distrito) {
+    printf("\nAnálise de Mobilidade Urbana do Distrito %d:\n", distrito->ID);
+
+    for (int i = 0; i < 15; i++) {
+        if (distrito->linhasOnibus[i].ID == 0 || distrito->linhasOnibus[i].ID <= 0) {
+            break; // Sai do loop se não houver mais linhas de ônibus
+        }
+
+        int totalPassageiros = distrito->linhasOnibus[i].quantOnibus * distrito->linhasOnibus[i].onibus.capacidade;
+        double mediaPassageirosPorOnibus = (double)totalPassageiros / distrito->linhasOnibus[i].quantOnibus;
+
+        printf("Linha %d: Média de Passageiros por Ônibus: %.2f\n",
+               distrito->linhasOnibus[i].ID, mediaPassageirosPorOnibus);
+    }
+}
+
+void listarInformacoesTotais(const Distrito *distritos, int numDistritos) {
+    double areaTotal = 0.0;
+    int habitantesTotal = 0;
+    double gastoTotalAgua = 0.0;
+    double gastoTotalEnergia = 0.0;
+
+    for (int i = 0; i < numDistritos; i++) {
+        areaTotal += distritos[i].area;
+        habitantesTotal += distritos[i].habitantes;
+        gastoTotalAgua += distritos[i].gastoTotalAgua;
+        gastoTotalEnergia += distritos[i].gastoTotalEnergia;
+    }
+
+    printf("\nInformações Totais da Simulação:\n");
+    printf("Área Total: %.2f km²\n", areaTotal);
+    printf("Total de Habitantes: %d\n", habitantesTotal);
+    printf("Gasto Total de Água em Todos os Distritos: %.2f litros\n", gastoTotalAgua);
+    printf("Gasto Total de Energia em Todos os Distritos: %.2f kWh\n", gastoTotalEnergia);
+}
+
+/*
+*
+* Funções Principais
+*
+*/
+
 Distrito* iniciaSimulacao() {
-    int areaCidade = randomInRange(1000, 2000); // Área da cidade base para a simulação entre 1000 e 2000 KM² (Valor alterado durante a geração da simulação)
-    int totalHabitantes = randomInRange(75000, 750000); // Número total de habitantes entre 50.000 e 500.000 (Valor alterado durante a geração da simulação) 
+    int areaCidade = randomInRange(750, 2000); // Área da cidade base para a simulação entre 1000 e 2000 KM² (Valor alterado durante a geração da simulação)
+    int totalHabitantes = randomInRange(100000, 7500000); // Número total de habitantes entre 50.000 e 500.000 (Valor alterado durante a geração da simulação) 
 
     // Calcula o mínimo e o máximo de habitantes por distrito
-    int minHabitantesPorDistrito = 0.0075 * totalHabitantes;  // 0.75%
+    int minHabitantesPorDistrito = 0.075 * totalHabitantes;  // 0,75
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
 
     // Calcula o mínimo e o máximo de área por distrito
@@ -407,8 +449,10 @@ int main() {
 
     Distrito* distritos = iniciaSimulacao();
     
+    listarInformacoesTotais(distritos, 96);
     listarInformacoesDistrito(&distritos[4]);
     analiseDemografica(&distritos[4]);
+    analiseMobilidadeUrbana(&distritos[4]);
 
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.

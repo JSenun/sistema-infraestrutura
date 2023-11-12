@@ -399,6 +399,44 @@ void listarInformacoesTotais(const Distrito *distritos, int numDistritos) {
     printf("Gasto Total de Energia em Todos os Distritos: %.2f kWh\n", gastoTotalEnergia);
 }
 
+// Função de comparação para qsort
+int compararDistritos(const void *a, const void *b) {
+    const Distrito *distritoA = (const Distrito *)a;
+    const Distrito *distritoB = (const Distrito *)b;
+
+    // Ordene em ordem decrescente de densidade habitacional
+    if (distritoA->densidadeHabitacional > distritoB->densidadeHabitacional) {
+        return -1;
+    } else if (distritoA->densidadeHabitacional < distritoB->densidadeHabitacional) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+// Função para listar os top-N distritos com maior densidade habitacional
+void listarTopNDistritos(const Distrito *distritos, int numDistritos, int N) {
+    // Cria um vetor de distritos para classificação
+    Distrito *distritosClassificados = malloc(sizeof(Distrito) * numDistritos);
+    
+    // Copia os dados dos distritos para o vetor classificado
+    for (int i = 0; i < numDistritos; i++) {
+        distritosClassificados[i] = distritos[i];
+    }
+
+    // Ordena o vetor de distritos em ordem decrescente de densidade habitacional
+    qsort(distritosClassificados, numDistritos, sizeof(Distrito), compararDistritos);
+
+    // Imprime os top-N distritos com maior densidade habitacional
+    printf("\nTop-%d Distritos com Maior Densidade Habitacional:\n", N);
+    for (int i = 0; i < N && i < numDistritos; i++) {
+        printf("%d° - Distrito %d: Densidade Habitacional: %.3f Hab/KM²\n",i+1, distritosClassificados[i].ID, distritosClassificados[i].densidadeHabitacional);
+    }
+
+    // Libera a memória alocada para o vetor classificado
+    free(distritosClassificados);
+}
+
 /*
 *
 * Funções Principais
@@ -452,7 +490,7 @@ int main() {
     listarInformacoesTotais(distritos, 96);
     listarInformacoesDistrito(&distritos[4]);
     analiseDemografica(&distritos[4]);
-    analiseMobilidadeUrbana(&distritos[4]);
+    listarTopNDistritos(distritos, 96, 25);
 
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.

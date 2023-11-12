@@ -452,7 +452,7 @@ Distrito* iniciaSimulacao() {
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
 
     // Calcula o mínimo e o máximo de área por distrito
-    double minAreaPorDistrito = 0.01 * areaCidade;  // 1%
+    double minAreaPorDistrito = 0.05 * areaCidade;  // 1%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     int numDistritos = 96; // Número de distritos a serem criados na simulação

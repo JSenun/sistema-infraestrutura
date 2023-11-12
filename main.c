@@ -14,6 +14,11 @@
 #define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia
 #define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia
 
+/*
+*
+* Estruturas 
+*
+*/
 
 typedef struct Casa {
     int ID;             // Nome da casa
@@ -70,6 +75,12 @@ typedef struct {
     int motos; // Estimativa de quantas motos podem existir no distrito simulado - 1 a cada 20 pessoas
     struct LinhaOnibus linhasOnibus[15]; // Vetor de linhas de ônibus
 } Distrito;
+
+/*
+*
+* Funções para a simulação
+*
+*/
 
 // Função para gerar um número aleatório entre min e max (inclusive)
 int randomInRange(int min, int max) {
@@ -241,6 +252,12 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
 
 }
 
+/*
+*
+* Funções para "análise de dados"
+*
+*/
+
 // Função para listar as informações de um distrito
 void listarInformacoesDistrito(const Distrito *distrito) {
     printf("\nInformações do Distrito %d:\n", distrito->ID);
@@ -249,9 +266,6 @@ void listarInformacoesDistrito(const Distrito *distrito) {
     printf("Densidade Habitacional: %.3f Hab/KM²\n", distrito->densidadeHabitacional);
     printf("Carros estimados no distrito: %d\n", distrito->carros);
     printf("Motos estimadas no distrito: %d\n", distrito->motos);
-    printf("Desempregados: %d\n", distrito->desempregados);
-    printf("Aposentados: %d\n", distrito->aposentados);
-    printf("Menores de 17 anos: %d\n", distrito->populacaoInfantil);
 
     int totalRuas = 0;
     int totalCasas = 0;
@@ -329,6 +343,26 @@ void listarLinhasOnibusDistrito(const Distrito *distrito) {
     }
 }
 
+void analiseDemografica(const Distrito *distrito) {
+    int menoresDe17 = distrito->populacaoInfantil;
+    int entre17e64 = distrito->habitantes - (distrito->populacaoInfantil + distrito->aposentados);
+    int com65ouMais = distrito->aposentados;
+
+    printf("\nAnálise Demográfica do Distrito %d:\n", distrito->ID);
+    printf("Menores de 17 anos: %d\n", menoresDe17);
+    printf("Entre 17 e 64 anos: %d\n", entre17e64);
+    printf("Com 65 anos ou mais: %d\n", com65ouMais);
+
+    // Calcular percentuais
+    double percentualMenoresDe17 = (double)menoresDe17 / distrito->habitantes * 100;
+    double percentualEntre17e64 = (double)entre17e64 / distrito->habitantes * 100;
+    double percentualCom65ouMais = (double)com65ouMais / distrito->habitantes * 100;
+
+    printf("Percentual de Menores de 17 anos: %.2f%%\n", percentualMenoresDe17);
+    printf("Percentual Entre 17 e 64 anos: %.2f%%\n", percentualEntre17e64);
+    printf("Percentual com 65 anos ou mais: %.2f%%\n", percentualCom65ouMais);
+}
+
 Distrito* iniciaSimulacao() {
     int areaCidade = randomInRange(1000, 2000); // Área da cidade base para a simulação entre 1000 e 2000 KM² (Valor alterado durante a geração da simulação)
     int totalHabitantes = randomInRange(75000, 750000); // Número total de habitantes entre 50.000 e 500.000 (Valor alterado durante a geração da simulação) 
@@ -374,7 +408,8 @@ int main() {
     Distrito* distritos = iniciaSimulacao();
     
     listarInformacoesDistrito(&distritos[4]);
-    listarCasasNoDistrito(&distritos[4]);
+    analiseDemografica(&distritos[4]);
+
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.
     free(distritos);

@@ -11,8 +11,8 @@
 #define POPULACAO_INFANTIL 17.0 
 #define INDICE_APOSENTADORIA 15.0
 #define MEDIA_MORADORES_RESIDENCIA 3.5
-#define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia para referência
-#define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia para referência
+#define MEDIA_GASTO_ENERGIA 24.0 // kWh por habitante por dia
+#define MEDIA_GASTO_AGUA 110.0 // Litros por habitante por dia
 
 
 typedef struct Casa {
@@ -159,20 +159,17 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
     distrito->ID = ID;
     distrito->area = area;
     distrito->habitantes = habitantes;
-    distrito->desempregados = habitantes * (INDICE_DESEMPREGO / 100);
-    distrito->aposentados = habitantes * (INDICE_APOSENTADORIA / 100);
-    distrito->populacaoInfantil = habitantes * (POPULACAO_INFANTIL / 100);
-    distrito->densidadeHabitacional = habitantes / area;
-    distrito->carros = habitantes / 10;
-    distrito->motos = habitantes / 20;
 
-    // Calcula o número total de casas com base no número de habitantes
+    // Calcula o número total de casas com base no número incial de habitantes
     int numCasas = habitantes / MEDIA_MORADORES_RESIDENCIA;
 
     // Inicializa o comprimento total das ruas
     double comprimentoTotalRuas = 0.0;
+    
+    // Reseta o número de habitantes no distrito
+    distrito->habitantes = 0;
 
-// Cria ruas para o distrito e distribui casas entre elas
+    // Cria ruas para o distrito e distribui casas entre elas
     for (int i = 0; i < numRuas; i++) {
         int ruaID = i + 1;
 
@@ -197,6 +194,11 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
 
         // Atribui as casas a esta rua
         criarRua(&distrito->ruas[i], ruaID, comprimento, anoObra, numCasasNaRua);
+        
+        // Atualiza o número de habitantes no distrito com base nos números gerados nas casas
+        for (int j = 0; j < numCasasNaRua; j++) {
+            distrito->habitantes += distrito->ruas[i].casas[j].numMoradores;
+        }
 
         // Reduz o número de casas restantes
         numCasas -= numCasasNaRua;
@@ -206,6 +208,16 @@ void criarDistrito(Distrito *distrito, int ID, double area, int habitantes, int 
             break;
         }
     }
+    
+    
+    // Calcula indicadores com base no número de habitantes
+    distrito->desempregados = distrito->habitantes * (INDICE_DESEMPREGO / 100);
+    distrito->aposentados = distrito->habitantes * (INDICE_APOSENTADORIA / 100);
+    distrito->populacaoInfantil = distrito->habitantes * (POPULACAO_INFANTIL / 100);
+    distrito->densidadeHabitacional = distrito->habitantes / area;
+    distrito->carros = distrito->habitantes / 10;
+    distrito->motos = distrito->habitantes / 20;
+
     
     // Cria e atribui linhas de ônibus ao distrito
     for (int i = 0; i < 15; i++) {  // Criar até 15 linhas de ônibus
@@ -318,8 +330,8 @@ void listarLinhasOnibusDistrito(const Distrito *distrito) {
 }
 
 Distrito* iniciaSimulacao() {
-    int areaCidade = randomInRange(900, 2000); // Área da cidade entre 500 e 2000 KM²
-    int totalHabitantes = randomInRange(75000, 750000); // Número total de habitantes entre 50.000 e 500.000
+    int areaCidade = randomInRange(1000, 2000); // Área da cidade base para a simulação entre 1000 e 2000 KM² (Valor alterado durante a geração da simulação)
+    int totalHabitantes = randomInRange(75000, 750000); // Número total de habitantes entre 50.000 e 500.000 (Valor alterado durante a geração da simulação) 
 
     // Calcula o mínimo e o máximo de habitantes por distrito
     int minHabitantesPorDistrito = 0.0075 * totalHabitantes;  // 0.75%
@@ -330,11 +342,6 @@ Distrito* iniciaSimulacao() {
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     int numDistritos = 96; // Número de distritos a serem criados na simulação
-
-    printf("Área estimada da cidade: %d KM²\n", areaCidade);
-    printf("Número total estimado de habitantes na cidade: %d\n", totalHabitantes);
-    printf("Mínimo de habitantes por distrito: %d\n", minHabitantesPorDistrito);
-    printf("Máximo de habitantes por distrito: %d\n", maxHabitantesPorDistrito);
 
     // Distribui aleatoriamente os habitantes entre os distritos
     srand(time(NULL));  // Inicializa a semente para números aleatórios

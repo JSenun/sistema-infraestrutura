@@ -479,18 +479,179 @@ Distrito* iniciaSimulacao() {
     return distritos;
 }
 
+int exibirMenu() {
+    int escolha;
+
+    printf("\n----- Simulação de gerenciamento de Infraestrutura Urbana -----\n");
+    printf("1. Listar Informações do/s Distrito/s\n");
+    printf("2. Listar Ruas do Distrito\n");
+    printf("3. Listar Casas no Distrito\n");
+    printf("4. Realizar Análise Demográfica\n");
+    printf("5. Listar Top N Maior Densidade Demográfica\n");
+    printf("6. Listar Informações Totais da Simulação\n");
+    printf("0. Sair\n");
+    printf("Escolha uma opção: ");
+    
+    scanf("%d", &escolha);
+
+    return escolha;
+}
+
 
 int main() {
 
     // Corrigindo problemas com caracteres no CMD
     setlocale(LC_ALL, "portuguese");
 
+    printf("\n----- Simulação de gerenciamento de Infraestrutura Urbana -----\n");
+    printf("Iniciando a simulação...\n");
     Distrito* distritos = iniciaSimulacao();
     
-    listarInformacoesTotais(distritos, 96);
-    listarInformacoesDistrito(&distritos[4]);
-    analiseDemografica(&distritos[4]);
-    listarTopNDistritos(distritos, 96, 25);
+
+    int escolha;
+    int entradaUsuario;
+
+
+    do {
+        escolha = exibirMenu();
+
+        switch (escolha) {
+            case 1:
+                printf("Informe o ID do distrito que quer informações: (OBS: Se quiser mais de um distrito digite 0)\n");
+                scanf("%d", &entradaUsuario);
+
+                if(entradaUsuario == 0){
+                    printf("Informe a quantidade de distritos que quer informações: \n");
+                    scanf("%d", &entradaUsuario);
+                    int *entradas = malloc(entradaUsuario * sizeof(int));
+
+                    // Lê as entradas do usuário
+                    printf("Digite os %d IDs dos distritos separados por espaços:\n", entradaUsuario);
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        scanf("%d", &entradas[i]);
+                    }
+
+                    printf("Entradas fornecidas pelo usuário:\n");
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        listarInformacoesDistrito(&distritos[entradas[i] - 1]);
+                    }
+                    printf("\n");
+
+                    // Liberando a memória alocada
+                    free(entradas);
+
+                }else{
+                    listarInformacoesDistrito(&distritos[entradaUsuario - 1]);
+                }
+
+
+                break;
+            case 2:
+
+                printf("Informe o ID do distrito com as ruas que quer listar: (OBS: Se quiser mais de um distrito digite 0)\n");
+                scanf("%d", &entradaUsuario);
+
+                if(entradaUsuario == 0){
+                    printf("Informe a quantidade de distritos que quer informações: \n");
+                    scanf("%d", &entradaUsuario);
+                    int *entradas = malloc(entradaUsuario * sizeof(int));
+
+                    // Lê as entradas do usuário
+                    printf("Digite os %d IDs dos distritos separados por espaços:\n", entradaUsuario);
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        scanf("%d", &entradas[i]);
+                    }
+
+                    printf("Entradas fornecidas pelo usuário:\n");
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        listarRuasDistrito(&distritos[entradas[i] - 1]);
+                    }
+                    printf("\n");
+
+                    // Liberando a memória alocada
+                    free(entradas);
+
+                }else{
+                    listarRuasDistrito(&distritos[entradaUsuario - 1]);
+                }
+
+                break;
+            case 3:
+
+                printf("Informe o ID do distrito com as casas que quer listar: (OBS: Se quiser mais de um distrito digite 0)\n");
+                scanf("%d", &entradaUsuario);
+
+                if(entradaUsuario == 0){
+                    printf("Informe a quantidade de distritos que quer informações: \n");
+                    scanf("%d", &entradaUsuario);
+                    int *entradas = malloc(entradaUsuario * sizeof(int));
+
+                    // Lê as entradas do usuário
+                    printf("Digite os %d IDs dos distritos separados por espaços:\n", entradaUsuario);
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        scanf("%d", &entradas[i]);
+                    }
+
+                    printf("Entradas fornecidas pelo usuário:\n");
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        listarCasasNoDistrito(&distritos[entradas[i] - 1]);
+                    }
+                    printf("\n");
+
+                    // Liberando a memória alocada
+                    free(entradas);
+
+                }else{
+                    listarCasasNoDistrito(&distritos[entradaUsuario - 1]);
+                }
+
+                break;
+            case 4:
+                
+                printf("Informe o ID do distrito que quer a análise demográfica: (OBS: Se quiser mais de um distrito digite 0)\n");
+                scanf("%d", &entradaUsuario);
+
+                if(entradaUsuario == 0){
+                    printf("Informe a quantidade de distritos que quer informações: \n");
+                    scanf("%d", &entradaUsuario);
+                    int *entradas = malloc(entradaUsuario * sizeof(int));
+
+                    // Lê as entradas do usuário
+                    printf("Digite os %d IDs dos distritos separados por espaços:\n", entradaUsuario);
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        scanf("%d", &entradas[i]);
+                    }
+
+                    printf("Entradas fornecidas pelo usuário:\n");
+                    for (int i = 0; i < entradaUsuario; i++) {
+                        analiseDemografica(&distritos[entradas[i] - 1]);
+                    }
+                    printf("\n");
+
+                    // Liberando a memória alocada
+                    free(entradas);
+
+                }else{
+                    analiseDemografica(&distritos[entradaUsuario - 1]);
+                }
+
+                break;
+            case 5:
+                printf("Informe quantos distritos quer ranquear com maior índice de densidade habitacional: \n");
+                scanf("%d", &entradaUsuario);
+                listarTopNDistritos(distritos, 96, entradaUsuario);
+                break;
+            case 6:
+                listarInformacoesTotais(distritos, 96);
+                break;
+            case 0:
+                printf("Programa encerrado.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+        }
+
+    } while (escolha != 0);
 
 
     // Liberando a memória alocada para o vetor de distritos quando não for mais necessário.

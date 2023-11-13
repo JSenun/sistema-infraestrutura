@@ -437,6 +437,21 @@ void listarTopNDistritos(const Distrito *distritos, int numDistritos, int N) {
     free(distritosClassificados);
 }
 
+// Função para gerar um relatório analítico sobre o distrito
+void gerarRelatorio(const Distrito *distrito) {
+    // Listar informações gerais do distrito
+    listarInformacoesDistrito(distrito);
+
+    // Listar informações demográficas
+    analiseDemografica(distrito);
+
+    // Listar informações de mobilidade urbana
+    analiseMobilidadeUrbana(distrito);
+
+    // Listar informações sobre as linhas de ônibus do distrito
+    listarLinhasOnibusDistrito(distrito);
+}
+
 /*
 *
 * Funções Principais
@@ -452,7 +467,7 @@ Distrito* iniciaSimulacao() {
     int maxHabitantesPorDistrito = 0.03 * totalHabitantes;   // 3%
 
     // Calcula o mínimo e o máximo de área por distrito
-    double minAreaPorDistrito = 0.05 * areaCidade;  // 1%
+    double minAreaPorDistrito = 0.05 * areaCidade;  // 5%
     double maxAreaPorDistrito = 0.13 * areaCidade;    // 13%
 
     int numDistritos = 96; // Número de distritos a serem criados na simulação
@@ -489,6 +504,7 @@ int exibirMenu() {
     printf("4. Realizar Análise Demográfica\n");
     printf("5. Listar Top N Maior Densidade Demográfica\n");
     printf("6. Listar Informações Totais da Simulação\n");
+    printf("7. Relatório de Distrito\n");
     printf("0. Sair\n");
     printf("Escolha uma opção: ");
     
@@ -643,6 +659,21 @@ int main() {
                 break;
             case 6:
                 listarInformacoesTotais(distritos, 96);
+                break;
+            case 7:
+
+                do {
+                    printf("Informe o ID do distrito que quer o relatório: \n");
+                    scanf("%d", &entradaUsuario);
+
+                    // Verifica se a entrada está no intervalo válido de IDs dos distritos
+                    if (entradaUsuario <= 0 || entradaUsuario > 96) {
+                        printf("ID de distrito inválido. Por favor, tente novamente.\n");
+                    }
+                } while (entradaUsuario <= 0 || entradaUsuario > 96);
+
+                gerarRelatorio(&distritos[entradaUsuario - 1]);
+       
                 break;
             case 0:
                 printf("Programa encerrado.\n");
